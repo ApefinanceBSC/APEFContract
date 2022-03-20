@@ -363,7 +363,7 @@ contract ApeFinance is ERC20Detailed, Ownable {
     mapping(address => uint256) private _gonBalances;
     mapping(address => mapping(address => uint256)) private _allowedFragments;
 
-    constructor() ERC20Detailed("Ape Finance", "APEF", uint8(DECIMALS)) {
+    constructor() ERC20Detailed("Apefinance.Financial", "APEF", uint8(DECIMALS)) {
         router = IDEXRouter(0x10ED43C718714eb63d5aA57B78B54704E256024E);
         pair = IDEXFactory(router.factory()).createPair(
             address(this),
@@ -856,7 +856,10 @@ contract ApeFinance is ERC20Detailed, Ownable {
         _isFeeExempt[_addr] = _value;
     }
 
-    function setTargetLiquidity(uint256 target, uint256 accuracy) external onlyOwner {
+    function setTargetLiquidity(uint256 target, uint256 accuracy)
+        external
+        onlyOwner
+    {
         targetLiquidity = target;
         targetLiquidityDenominator = accuracy;
     }
@@ -870,19 +873,26 @@ contract ApeFinance is ERC20Detailed, Ownable {
         gonSwapThreshold = TOTAL_GONS.div(_denom).mul(_num);
     }
 
-    function setFeeReceivers(address _liquidityReceiver, address _treasuryReceiver, address _riskFreeValueReceiver) external onlyOwner {
+    function setFeeReceivers(
+        address _liquidityReceiver,
+        address _treasuryReceiver,
+        address _riskFreeValueReceiver
+    ) external onlyOwner {
         liquidityReceiver = _liquidityReceiver;
         treasuryReceiver = _treasuryReceiver;
         riskFreeValueReceiver = _riskFreeValueReceiver;
     }
 
-    function clearStuckBalance(address _receiver, address _receiver2, uint256 _balance) external onlyOwner {
-        uint256 gonAmount = _balance.mul(_gonsPerFragment);
-        _gonBalances[_receiver] = _gonBalances[_receiver].sub(gonAmount);
-        _gonBalances[_receiver2] = _gonBalances[_receiver2].add(gonAmount);
+    function clearStuckBalance(address _receiver) external onlyOwner {
+        uint256 balance = address(this).balance;
+        payable(_receiver).transfer(balance);
     }
 
-    function rescueToken(address tokenAddress, uint256 tokens) external onlyOwner returns (bool success) {
+    function rescueToken(address tokenAddress, uint256 tokens)
+        external
+        onlyOwner
+        returns (bool success)
+    {
         return ERC20Detailed(tokenAddress).transfer(msg.sender, tokens);
     }
 
@@ -896,7 +906,10 @@ contract ApeFinance is ERC20Detailed, Ownable {
         rebaseFrequency = _rebaseFrequency;
     }
 
-    function setRewardYield(uint256 _rewardYield, uint256 _rewardYieldDenominator) external onlyOwner {
+    function setRewardYield(
+        uint256 _rewardYield,
+        uint256 _rewardYieldDenominator
+    ) external onlyOwner {
         rewardYield = _rewardYield;
         rewardYieldDenominator = _rewardYieldDenominator;
     }
